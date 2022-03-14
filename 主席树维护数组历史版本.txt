@@ -1,0 +1,84 @@
+#include <iostream>
+#include<fstream>
+#include<iomanip>
+#include<algorithm>
+#include<string>
+#include<string.h>
+#include<vector>
+#include<cstdlib>
+#include<stdlib.h>
+using namespace std;
+#define lson rt<<1
+#define rson rt<<1|1
+#define mid (l+r)>>1
+typedef long long LL;
+typedef pair<signed, signed>P;
+using namespace std;
+#define int long long
+inline int rd() {
+	int ans = 0; char last = ' ', ch = getchar();
+	while (!(ch >= '0' && ch <= '9'))last = ch, ch = getchar();
+	while (ch >= '0' && ch <= '9')ans = ans * 10 + ch - '0', ch = getchar();
+	if (last == '-')ans = -ans;
+	return ans;
+}
+const int maxn = 1e6+5;
+signed arr[maxn];// , arr[maxn];
+signed cnt = 0, n, m, q,op;
+signed sum[maxn << 5], L[maxn << 5], R[maxn << 5], T[maxn];
+inline signed build(signed l, signed r)
+{
+	signed rt = ++cnt;
+	sum[rt] = 0;
+	signed md = mid;
+	if (l == r)
+	{
+		sum[rt] = arr[l];
+		return rt;
+	}
+	L[rt] = build(l, md), R[rt] = build(md + 1, r);
+	return rt;
+}
+inline signed update(signed pre, signed l, signed r, signed x,signed val)
+{
+	signed rt = ++cnt;
+	L[rt] = L[pre], R[rt] = R[pre],sum[rt]=sum[pre];
+	if (l < r)
+		if (x <= mid)L[rt] = update(L[pre], l, mid, x,val);
+		else R[rt] = update(R[pre], (mid)+1, r, x,val);
+	else if(op==1) sum[rt] = val;
+	return rt;
+}
+inline signed query(signed u, signed l, signed r, signed k)
+{
+	if (l >= r)return sum[u];
+	if (k<=mid)return query(L[u], l, mid, k);
+	else return query(R[u], (mid)+1, r, k);
+}
+signed main(){
+	ios::sync_with_stdio(0);
+	cin.tie(0);
+	signed t,n,k,m;
+	cin >> n >> m;
+	for (int i = 1; i <= n; i++) cin >> arr[i];
+	T[0] = build(1, n);
+	int ver = 0;
+	while (m--)
+	{
+		signed vi, loc, val;
+		cin >> vi >> op >> loc;
+		if (op == 1)
+		{
+			cin >> val;
+			T[ver + 1] = update(T[vi], 1, n, loc, val);//当前版本在某个历史版本的基础上把loc改成val	
+			ver++;
+		}
+		else
+		{
+			T[ver + 1] = update(T[vi], 1, n, loc, 0);//当前版本复制vi版本，并求loc的值
+			ver++;
+			cout << query(T[ver], 1, n, loc) << '\n';
+		}
+	}
+	return 0;
+}

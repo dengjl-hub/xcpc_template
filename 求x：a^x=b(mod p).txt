@@ -1,0 +1,26 @@
+long long bsgs(long long a,long long b,long long p){///*******注意QPow的模数
+	map<long ,long>hash;
+	hash.clear();
+	b%=p;
+	int t=(int)sqrt(p)+1;
+	for(int j=0;j<t;j++){
+		int val=(long long)b*QPow(a,j)%p;
+		hash[val]=j;
+	}
+	a=QPow(a,t);
+	if(a==0){
+		if(b==0){
+			return 1;
+		}else{
+			return -1;
+		}
+	}
+	for(int i=0;i<=t;i++){
+		int val=QPow(a,i);
+		int j=hash.find(val)==hash.end()?-1:hash[val];
+		if(j>=0&&i*t-j>=0){
+			return i*t-j;
+		}
+	}
+	return -1;//无解时返回-1
+}

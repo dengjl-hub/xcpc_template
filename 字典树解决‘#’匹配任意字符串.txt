@@ -1,0 +1,173 @@
+/*链接：https://ac.nowcoder.com/acm/problem/15160
+来源：牛客网
+
+小H在一片遗迹中发现了一种古老而神秘的文字，这种文字也由26种字母组成，小H用小写字母来代替它们。遗迹里总共有N句话，由于年代久远，每句话都至少有一处无法辨识，用#表示，缺失的可能是任意长度(也包括0)的任意字符串。
+    小H发现这些话非常相似，现在小H想知道，有多少对句子可能是相同的
+    注意：(x,x)这样的句子对不计入答案，(x,y)，(y,x)视为同一个句子对(详见样例)
+*/
+#include <iostream>
+#include<string>
+#include<string.h>
+#include<cstring>
+#include<fstream>
+#include<iomanip>
+#include<algorithm>
+#include<string>
+#include<string.h>
+#include<vector>
+#include<cstdlib>
+#include<time.h>
+#include<math.h>
+#include<cmath>
+#include<stdlib.h>
+#include<set>
+#include<sstream>
+#include<map>
+#include<stdio.h>
+#include<cstring>
+//#include<unordered_map>
+#include<queue>
+using namespace std;
+#define lson rt<<1
+#define rson rt<<1|1
+#define mid (l+r)>>1
+#define cf cout.flush()
+typedef long long LL;
+typedef long long ll;
+typedef pair<LL, LL> pll;
+typedef pair<signed, signed>P;
+using namespace std;
+#define int long long
+#define il inline
+//inline int gcd(int a, int b) { return b ? gcd(b, a%b) : a; };
+const LL mod = 1e9 + 7;
+inline LL QPow(LL a, LL b)
+{
+	LL ans = 1;
+	if (b < 0 || a == 0)return 0;
+	while (b)
+	{
+		if (b & 1)ans = ans * a%mod;
+		a = a * a%mod;
+		b >>= 1;
+	}
+	return ans;
+}
+const int maxn = 1e6 + 5;
+
+struct Trie
+{
+	signed cnt, tree[maxn][26];
+	void init()
+	{
+		cnt = 0;
+	}
+	signed insert(char*s, signed op)
+	{
+		signed len = strlen(s);
+		signed root = 0, t = (op == 1) ? 0 : len - 1;
+		for (signed i = t;; i += op)
+		{
+			if (s[i] == '#')break;
+			signed id = s[i] - 'a';
+			if (!tree[root][id])
+				tree[root][id] = ++cnt;
+			root = tree[root][id];
+		}
+		return root;
+	}
+}pre, suf;
+struct BIT
+{
+	signed m, bit[maxn];
+	void init(signed k)
+	{
+		m = k;
+	}
+	void add(signed i, signed x)
+	{
+		for (; i <= m; i += i & -i)
+		{
+			bit[i] += x;
+		}
+	}
+	signed sum(signed i)
+	{
+		signed s = 0;
+		for (; i > 0; i -= i & -i)s += bit[i];
+		return s;
+	}
+}b1, b2;
+signed n, u, v;
+signed pos, L[maxn], R[maxn];
+char s[maxn];
+vector<signed>g[maxn];
+LL ans;
+void dfs(signed u)
+{
+	L[u] = ++pos;
+	for (int i = 0; i < 26; i++)
+	{
+		signed v = suf.tree[u][i];
+		if (v)dfs(v);
+	}
+	R[u] = pos;
+}
+void cal(signed u)
+{
+	signed v;
+	for (int i = 0; i < g[u].size(); i++)
+	{
+		v = g[u][i];
+		ans += b1.sum(R[v]) - b1.sum(L[v]) + b2.sum(L[v]);
+		b1.add(L[v], 1);
+		b2.add(L[v], 1);
+		b2.add(R[v] + 1, -1);
+	}
+	for (signed i = 0; i < 26; i++)
+	{
+		v = pre.tree[u][i];
+		if (v)cal(v);
+	}
+	for (signed i = 0; i < g[u].size(); i++)
+	{
+		v = g[u][i];
+		b1.add(L[v], -1);
+		b2.add(L[v], -1);
+		b2.add(R[v] + 1, 1);
+	}
+}
+void solve()
+{
+	ans = 0;
+	pos = 0;
+	dfs(0);
+	b1.init(pos);
+	b2.init(pos);
+	cal(0);
+	cout << ans << endl;
+}
+signed main() 
+{
+	ios::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+	cin >> n;
+	pre.init();
+	suf.init();
+	for (int i = 1; i <= n; i++)
+	{
+		cin >> s;
+		u = pre.insert(s, 1);
+		v = suf.insert(s, -1);
+		g[u].push_back(v);
+	}
+	solve();
+	system("pause");
+	return 0;
+}
+/*
+2 
+a#a 
+#
+*/

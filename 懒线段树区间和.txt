@@ -1,0 +1,122 @@
+#include<bits/stdc++.h>
+using namespace std;
+#define lson rt<<1
+#define rson rt<<1|1
+#define mid (l+r)>>1
+typedef long long LL;
+typedef long long ll;
+typedef pair<LL, LL> pll;
+typedef pair<signed, signed>P;
+using namespace std;
+#define int long long
+#define cf cout.flush()
+
+inline int gcd(int a, int b) { return b ? gcd(b, a%b) : a; };
+LL mod = 1e9+7;
+LL QPow(LL a, LL b)
+{
+	LL as = 1;
+	if (b < 0)return 0;
+	while (b)
+	{
+		if (b & 1)as = as * a%mod;
+		a = a * a%mod;
+		b >>= 1;
+	}
+	return as;
+}
+const int maxn = 2e5 + 100;
+inline int rd() {
+	int ans = 0; char last = ' ', ch = getchar();
+	while (!(ch >= '0' && ch <= '9'))last = ch, ch = getchar();
+	while (ch >= '0' && ch <= '9')ans = ans * 10 + ch - '0', ch = getchar();
+	return ans;
+}
+inline void qwrite(int x)
+{
+	if (x < 0)x = -x, putchar('-');
+	if (x > 9)qwrite(x / 10);
+	putchar('0' + x % 10);
+}
+ll sum[maxn << 2];
+ll tag[maxn << 2];
+int arr[maxn];
+inline void pushup(int rt)
+{
+	sum[rt] = sum[lson] + sum[rson];
+}
+inline void pushdown(int rt, int l, int r)
+{
+	if (tag[rt])
+	{
+		int md = mid;
+		sum[lson] += (md - l + 1)*tag[rt], sum[rson] += (r - md)*tag[rt];
+		tag[lson] += tag[rt], tag[rson] += tag[rt];
+		tag[rt] = 0;
+	}
+}
+void build(int l, int r, int rt)
+{
+	tag[rt] = 0;
+	if (l == r)
+	{
+		sum[rt] = arr[l];
+		return;
+	}
+	build(l, mid, lson);
+	build((mid)+1, r, rson);
+	pushup(rt);
+}
+void update(int l, int r, int L, int R, int rt,int val)
+{
+	if (L <= l && r <= R)
+	{
+		tag[rt] += val;
+		sum[rt] += (r - l + 1)*val;
+		return;
+	}
+	int md = mid;
+	pushdown(rt, l, r);
+	if (L <= md)update(l, md, L, R, lson, val);
+	if (R > md)update(md + 1, r, L, R, rson, val);
+	pushup(rt);
+}
+inline int query(int L, int R, int l, int r, int rt)
+{
+	if (L <= l && r <=R)
+	{
+		return sum[rt];
+	}
+	pushdown(rt, l, r);
+	int md = mid;
+	int ans = 0;
+	if (L <= md)ans += query(L, R, l, md, lson);
+	if (R > md)ans += query(L, R, md + 1, r, rson);
+	pushup(rt);
+	return ans;
+}
+signed main()
+{
+	ios::sync_with_stdio(0);
+	cin.tie(0);
+	int t,n,m,x,k,a,b,y,c,z,p;
+	cin >> n >> m;
+	for (int i = 1; i <= n; i++)cin >> arr[i];
+	build(1, n, 1);
+	while (m--)
+	{
+		cin >> p;
+		if (p == 1)
+		{
+			cin >> x >> y >> k;
+			update(1, n, x, y, 1, k);
+		}
+		else
+		{
+			cin >> x >> y;
+			cout << query(x, y, 1, n, 1) << '\n';
+		}
+	}
+	//system("pause");
+	return 0;
+}

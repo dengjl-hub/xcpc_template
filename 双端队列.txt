@@ -1,0 +1,37 @@
+const signed maxn=1002;
+struct Deque
+{
+	P arr[maxn];
+	signed fr, ba;
+	inline void init()
+	{
+		fr = ba = 0;
+	}
+	inline signed size()
+	{
+		return ba - fr;
+	}
+	inline P back()
+	{
+		return arr[(ba==0?maxn-1:ba-1)];
+	}
+	inline void pop_back()
+	{
+		ba--;
+		if (ba < 0)ba += maxn;
+	}
+	inline void push_back(const P&tmp)
+	{
+		arr[ba++] = tmp;
+		if (ba >= maxn)ba = 0;
+	}
+	inline P front()
+	{
+		return arr[fr];
+	}
+	inline void pop_front()
+	{
+		fr++;
+		if (fr >= maxn)fr = 0;
+	}
+}dq1,dq2;

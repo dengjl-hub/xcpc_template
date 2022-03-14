@@ -1,0 +1,89 @@
+#include<stdio.h>
+#include<iostream>
+#include<string.h>
+#include<sstream>
+using namespace std;
+const int maxn =2e6+5;
+int tree[maxn][30];
+bool flag[maxn];
+bool vis[maxn];
+int tot;
+int insert_(char *str)
+{
+   int len=strlen(str);
+   int root=0;
+   for(int i=0;i<len;i++)
+   {
+       int id;
+        if(str[i]=='*') id=26;//*号存在第26位
+        else if(str[i]=='?') id=27;//？存在第27位
+        else   id=str[i]-'a';
+       if(!tree[root][id]) tree[root][id]=++tot;
+       root=tree[root][id];
+   }
+   flag[root]=true;//结尾符标记
+   return root;
+}
+void find_(char *str,int pos1,int pos2)//pos1 模式串下标 pos2 匹配串下标
+{
+    int len=strlen(str);
+    if(pos2==len&&flag[pos1])//达到条件则对该字符串进行标记
+    {
+        vis[pos1]=1;//对该单词的下标进行标记
+    }
+    int root=pos1;
+    int id=str[pos2]-'a';
+    if(tree[root][id])//存在相同字符
+    {
+        int tmp=tree[root][id];
+        find_(str,tmp,pos2+1);
+    }
+    if(tree[root][27])//存在？
+    {
+        int tmp=tree[root][27];
+        find_(str,tmp,pos2+1);
+    }
+    if(tree[root][26])//存在*
+    {
+        int tmp=tree[root][26];
+        for(int j=pos2;j<=len;j++)//对之后的每一个位置进行dfs,要注意从pos2开始，因为*号可以不匹配
+            find_(str,tmp,j);
+    }
+    return ;
+}
+char ss[maxn];
+int pos[maxn];
+int main()
+{
+    int n,m;
+    scanf("%d%d",&n,&m);
+    for(int i=0;i<n;i++)
+    {
+        scanf("%s",ss);
+        pos[i]=insert_(ss);//插入时顺带获取下标
+    }
+    while(m--)
+    {
+        int flag=0;
+        scanf("%s",ss);
+        find_(ss,0,0);
+        for(int i=0;i<n;i++)
+        {
+            if(vis[pos[i]])
+            {
+                flag=1;
+                 printf("%d ",i);
+            }
+        }
+        for(int i=0;i<n;i++)
+        {
+            if(vis[pos[i]])
+            {
+                vis[pos[i]]=0;
+            }
+        }
+        if(flag==0) printf("Not match");
+        printf("\n");
+    }
+    return 0;
+}

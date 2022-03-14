@@ -1,0 +1,42 @@
+#define N 101
+struct matrix {
+	int m[N][N];
+};
+matrix b, ans;
+char str[101];
+int len;
+void init()
+{
+	int i;
+	memset(b.m, 0, sizeof(b.m));
+	for (i = 1; i < len; i++)
+		b.m[i][i] = b.m[i][i - 1] = 1;
+	b.m[0][0] = b.m[0][len - 1] = 1;//第一个字符与最后一个结合 
+
+}
+matrix mul(matrix a, matrix b)
+{
+	int i, j, k;
+	matrix c;
+	for (i = 0; i < len; i++)
+		for (j = 0; j < len; j++)
+		{
+			c.m[i][j] = 0;
+			for (k = 0; k < len; k++)
+				c.m[i][j] += (a.m[i][k] * b.m[k][j]);
+		}
+	return c;
+}
+void mpow(matrix ma, int n)
+{
+	int i;
+	memset(ans.m, 0, sizeof(ans.m));
+	for (i = 0; i < len; i++)
+		ans.m[i][i] = 1;
+	for (; n; n >>= 1)
+	{
+		if (n & 1)
+			ans = mul(ans, ma);
+		ma = mul(ma, ma);
+	}
+}

@@ -1,0 +1,126 @@
+        """print("Is the unknown face a picture of biden? {}".format(results[1]))
+        print("Is the unknown face a new person that we've never seen before? {}".format(not True in results))"""
+    
+
+    """logger.info("Finish all the images.")
+    logger.info("Elapsed time: {:.3f}s".format(time.time() - start))"""
+    
+    """
+    try:
+        biden_face_encoding = face_recognition.face_encodings(biden_image)[0]
+        obama_face_encoding = face_recognition.face_encodings(obama_image)[0]
+        unknown_face_encoding = face_recognition.face_encodings(unknown_image)[0]
+    except IndexError:
+        print("I wasn't able to locate any faces in at least one of the images. Check the image files. Aborting...")
+        quit()
+
+    known_faces = [
+            biden_face_encoding,
+            obama_face_encoding
+            ]
+
+# results is an array of True/False telling if the unknown face matched anyone in the known_faces array
+    results = face_recognition.compare_faces(known_faces, unknown_face_encoding)
+
+    print("Is the unknown face a picture of wangzuxian? {}".format(results[0]))
+    print("Is the unknown face a picture of biden? {}".format(results[1]))
+    print("Is the unknown face a new person that we've never seen before? {}".format(not True in results))
+    """
+    
+    """image = face_recognition.load_image_file("./guan_zhi_lin.jpg")
+    face_locations = face_recognition.face_locations(image)
+    #plt.show(image)
+    img=cv2.imread('./guan_zhi_lin.jpg')
+    #cv2.imshow('img',img)
+    for face_location in face_locations:
+        top,rig,bot,lef=face_location
+        face_image=image[top:bot,lef:rig]
+        pil_image=Image.fromarray(face_image)
+        pil_image.show()
+        pil_image.save('guan_zhi_lin_Face.jpg')"""
+    
+    
+    
+    
+    
+    """cv2.imshow('img',img)#圈出人脸
+    key=cv2.waitKey(0)
+    cv2.destroyAllWindows()
+    face_cascade=cv2.CascadeClassifier('./face_detection/haarcascade_frontalface_default.xml')
+    img=cv2.imread('./joeyWong.jpg')
+    cv2.imshow('img',img)
+    faces=face_cascade.detectMultiScale(img,1.2,2)
+    print(face_locations)
+    print(faces)
+    for(x,y,w,h) in faces:
+        cv2.rectangle(img,(x,y),(x+w,x+h),(255,0,0),2)
+    
+    
+    
+    cv2.imshow('img',img)
+    key=cv2.waitKey(0)
+    cv2.destroyAllWindows()"""
+
+
+#批量识别人脸
+"""project_root = pathlib.Path()
+    inputPath = project_root / "data" / "trump"
+    human=[]
+    ii=0
+    while(ii<3):
+        human.append(face_recognition.load_image_file("./"+lis[ii]+".jpg"))
+        ii+=1
+
+
+    #start = time.time()
+    cnt=0
+    i=0
+    for num, input_img_filename in enumerate(inputPath.iterdir()):
+        try:
+            unknown_image = face_recognition.load_image_file(str(input_img_filename))
+            biden_face_encoding = face_recognition.face_encodings(biden_image)[0]
+            obama_face_encoding = face_recognition.face_encodings(obama_image)[0]
+            unknown_face_encoding = face_recognition.face_encodings(unknown_image)[0]
+            known_faces = [
+                    biden_face_encoding,
+                    obama_face_encoding
+                    ]
+            results = face_recognition.compare_faces(known_faces, unknown_face_encoding)
+            if format(results[0])=="True":
+                cnt+=1
+            else:
+                print(str(input_img_filename))
+                
+            print("Is the unknown face a picture of wangzuxian? {}".format(results[0]))
+            
+        except IndexError:
+            print("I wasn't able to locate any faces in at least one of the images. Check the image files. Aborting...")
+            print(str(input_img_filename))
+            quit()
+
+        i=i+1
+        print(cnt)
+        print(i)
+    
+    while(true):
+        a=1"""
+     #为图像加标签
+    """image = face_recognition.load_image_file("./joeyWong.jpg")
+    face_locations = face_recognition.face_locations(image)
+    #plt.show(image)
+    img=cv2.imread('./joeyWong.jpg')
+    #cv2.imshow('img',img)
+    fontpath = "font/simsun.ttc"
+    font = ImageFont.truetype(fontpath, 32)
+    for face_location in face_locations:
+        top,rig,bot,lef=face_location
+        cv2.rectangle(img,(lef,top),(rig,bot),(255,0,0),4)
+        img2=Image.fromarray(img)
+        draw = ImageDraw.Draw(img2)
+#绘制文字信息
+        draw.text(((lef+rig)/2-20,top-30),  "关之琳", font = font, fill = (255, 0, 0))
+    img=np.array(img2)
+    cv2.imshow('img',img)
+    cv2.imwrite("./wzxfc.jpg",img)
+    key=cv2.waitKey(0)
+    cv2.destroyAllWindows()"""

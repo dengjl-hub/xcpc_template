@@ -1,0 +1,58 @@
+//求原根  有原根充要条件是2p^k,p为奇素数
+vector<LL>a;
+#define int long long
+int pow_mod(int a, int b, int p)
+{
+	int ans = 1;
+	while (b)
+	{
+		if (b & 1)
+			ans = ans * a%p;
+		a = a * a%p;
+		b >>= 1;
+	}
+	return ans;
+}
+bool g_test(LL g, LL p)
+{
+	for (LL i = 0; i < a.size(); i++)
+	{
+		if (pow_mod(g, (p - 1) / a[i], p) == 1)
+			return 0;
+	}
+	return 1;
+}
+LL primitive_root(LL p)
+{
+	LL tmp = p - 1;
+	a.clear();
+	for (LL i = 2; i <= tmp / i; i++)
+	{
+		if (tmp%i == 0)
+		{
+			a.push_back(i);
+			while (tmp%i == 0)
+				tmp /= i;
+		}
+	}
+	if (tmp != 1)
+		a.push_back(tmp);
+	LL g = 1;
+	while (true)
+	{
+		if (g_test(g, p))
+			return g;
+		g++;
+	}
+}
+signed main() {
+	ios::sync_with_stdio(0);
+	cin.tie(0);
+	//cout.tie(0);
+	int t,n;
+	string str;
+	cin >> n;
+	cout << primitive_root(n);
+	system("pause");
+	return 0;
+}

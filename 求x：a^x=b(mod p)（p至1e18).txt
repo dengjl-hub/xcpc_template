@@ -1,0 +1,150 @@
+#include<bits/stdc++.h>
+using namespace std;
+const int maxn=1e4+10;
+const int N=60;
+const int MAXP=20;//最大素因子的大小 
+typedef long long ll;
+bool ok[maxn],yes;
+int prime[maxn],cnt;
+int t;
+int v[N],num[N],tot;//素数因子v[i] 出现了num[i]次 
+ll X[N],P[N],sz;//返回(x',pi^ki) x'=x(mod pi^ki) 用于CRT 
+ll a,b,p;
+void sieve()
+{
+	for(ll i=2;i<maxn;++i)
+	{
+		if(!ok[i])prime[cnt++]=i;
+		for(int j=0;j<cnt;++j)
+		{
+			if(i*prime[j]>=maxn)break;
+			ok[i*prime[j]]=1;
+			if(i%prime[j]==0)break; 
+		}
+	}
+}
+int fac(ll x)
+{
+	int tot=0;
+	for(int i=0;i<cnt;++i)
+	{
+		if(1ll*prime[i]*prime[i]>x)break;
+		if(x%prime[i]==0)
+		{
+			v[++tot]=prime[i];
+			num[tot]=0;
+			while(x%prime[i]==0)
+			{
+				num[tot]++;
+				x/=prime[i];
+			}
+		}
+	}
+	if(x>1)
+	{
+		v[++tot]=x;
+		num[tot]=1;
+	}
+	return tot;
+}
+ll extgcd(ll a,ll b,ll &x,ll &y)
+{
+	ll d=a;
+	if(b)d=extgcd(b,a%b,y,x),y-=(a/b)*x;
+	else x=1,y=0;
+	return d;
+}
+ll mul(ll u,ll v,ll p)
+{
+	return (u*v-(ll)((long double)u*v/p)*p+p)%p;
+}
+ll modpow(ll x,ll n,ll mod)
+{
+	ll res=1;
+	for(;n;n/=2,x=mul(x,x,mod)%mod)
+	if(n&1)res=mul(res,x,mod)%mod;
+	return res;
+}
+ll Pholig_Hellman(ll a,ll B,ll p)//返回(x',pi^ki) x'=x(mod pi^ki) 
+{
+	ll r=p-1;
+	//找a的阶(最小)r p-1不一定是最小 类似判原根的过程 
+	//最后r应该化为最小的阶
+	tot=fac(r);
+	for(int i=1;i<=tot;++i)
+	while(r%v[i]==0&&modpow(a,r/v[i],p)==1)r/=v[i];
+	tot=fac(r);//重新求素因子 
+	ll x,y,inv,tmp[MAXP],sz=0;
+	extgcd(a,p,x,y);
+	inv=(x%p+p)%p;
+	for(int i=1;i<=tot;++i)
+	{
+		int c=v[i],d=num[i];
+		ll b=B,f=0,g=1;
+		ll l=1,now=r,h=modpow(a,now/c,p);
+		//printf("h:%lld\n",h);
+		for(int k=0;k<c;++k,l=mul(l,h,p))
+		{
+			tmp[k]=l; 
+			//printf("tmp[%d]:%lld\n",k,tmp[k]);
+		}
+		for(int j=1;j<=d;++j)
+		{
+			now/=c;//(p-1)/(c^j)
+			ll e=modpow(b,now,p);
+			ll co=-1,dif;//系数co 
+			for(int k=0;k<c;++k)
+			{
+				if(e==tmp[k])
+				{
+					co=k; 
+					break;
+				}
+			}
+			if(co==-1)return -1;//无解
+			//printf("co:%lld\n",co);
+			co*=g;//实际系数 
+			f+=co;
+			dif=modpow(inv,co,p);
+			b=mul(b,dif,p); 
+			g*=c;
+		}
+		//printf("f:%lld g:%lld\n",f,g);
+		X[++sz]=f;
+		P[sz]=g;
+	}
+	return sz;
+}
+ll CRT(ll r[],ll m[],int n)//x'==x(mod p)方程组 共n项 要求pi互素 
+{
+	ll ans=0,M=1,x,y;
+	for(int i=1;i<=n;++i)
+	M*=m[i];
+	for(int i=1;i<=n;++i)
+	{
+		ll mi=M/m[i];
+		extgcd(mi,m[i],x,y);
+		x=(x%m[i]+m[i])%m[i];
+		ans=(ans+mul(mul(r[i],mi,M),x,M))%M;
+	} 
+	return (ans+M)%M;
+}
+int main()
+{
+	sieve();
+	scanf("%d",&t);
+	while(t--)
+	{
+		scanf("%lld%lld%lld",&p,&a,&b); 
+		sz=Pholig_Hellman(a,b,p);//求a^x=b (mod p)
+		if(sz!=-1)printf("%lld\n",CRT(X,P,sz));
+		else puts("-1");
+	}
+	return 0;
+}
+//p a b
+/*
+105
+65537 2 4
+8101 6 7531
+*/

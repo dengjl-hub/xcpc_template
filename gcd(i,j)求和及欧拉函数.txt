@@ -1,0 +1,63 @@
+signed Eu[maxn];
+bool vis[maxn];
+signed prim[maxn];
+signed minPrim[maxn];
+signed top = 0;
+void init_Eu()
+{
+	vis[0] = vis[1] = 1;
+	for (int i = 2; i < maxn; i++)
+	{
+		if (!vis[i])prim[top++] = i;
+		for (int j = 0; j < top&&i*prim[j] < maxn; j++)
+		{
+			vis[i*prim[j]] = 1;
+			minPrim[i*prim[j]] = prim[j];
+			if (i%prim[j]==0)break;
+		}
+	}
+	
+	for (int i = 2; i <maxn; i++)
+	{
+		signed tmp_i = i;
+		signed tmp_tmp_i;
+		int phi = i;
+		while (vis[tmp_i]&&tmp_i!=1)
+		{
+			phi /= minPrim[tmp_i];
+			phi *= (minPrim[tmp_i] - 1);
+			tmp_tmp_i = tmp_i;
+			while (tmp_i%minPrim[tmp_tmp_i] == 0)
+				tmp_i /= minPrim[tmp_tmp_i];
+		}
+		if (tmp_i != 1)
+		{
+			phi /= tmp_i;
+			phi *= (tmp_i - 1);
+		}
+		Eu[i] = phi;
+	}
+	Eu[1] = 1;
+	//for (int i = 1; i <= 10; i++)
+		//cout << Eu[i] << " ";
+}
+int sum_gcd_i_j(int n, int m)
+{
+	init_Eu();
+	int tmp = min(n, m);
+	int ans = 0;
+	for (int i = 1; i <= tmp; i++)
+		ans += Eu[i] * (n / i)*(m / i);
+	//cout << ans << endl;
+	return ans;
+}
+signed main() {
+	ios::sync_with_stdio(0);
+	cin.tie(0);
+	long long t, n, m, A, B, C, D,u,v,k,x,y,z;
+	string str;
+	cin >> n>>m;
+	cout << sum_gcd_i_j(n, m);
+	system("pause");
+	return 0;
+}

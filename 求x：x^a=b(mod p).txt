@@ -1,0 +1,135 @@
+typedef long long ll;
+const int mop=1e7+4;
+int prime[mop/10],tot=0,cnt;
+ll temp[mop],ans[mop],A,B,C;
+bool vis[mop];
+inline void linear_shaker() {
+    memset(vis,false,sizeof(vis));
+    for (register int i=2;i<mop;++i) {
+        if (!vis[i]) prime[++tot]=i;
+        for (int j=1;j<=tot&&i*prime[j]<mop;++j) {
+            vis[i*prime[j]]=true;
+            if (i%prime[j]==0) break;
+        }
+    }
+}
+inline void divide(ll a) {
+    cnt=0;
+    int t=(int)sqrt(1.0+a);
+    for (int i=1;prime[i]<=t;++i) {
+        if (a%prime[i]==0) temp[++cnt]=prime[i];
+        while (a%prime[i]==0) a/=prime[i];
+    }
+    if (a>1) temp[++cnt]=a;
+}
+inline ll mult(ll x,ll y,ll MOD) {
+    x%=MOD,y%=MOD;
+    return ((x*y-(ll)(((long double)x*y+0.5)/MOD)*MOD)%MOD+MOD)%MOD;
+}
+inline ll fpow(ll a,ll b,ll MOD) {
+    ll ret=1;
+    while (b) {
+        if (b&1) ret=mult(ret,a,MOD);
+        b>>=1,a=mult(a,a,MOD); 
+    }
+    return ret;
+}
+inline ll broot(ll p) {
+    divide(p-1);
+    for (int g=2;;++g) {
+        bool flag=true;
+        for (int i=1;i<=cnt;++i)
+            if (fpow(g,(p-1)/temp[i],p)==1) {
+                flag=false;
+                break;
+            }
+        if (flag) return g;
+    }
+}
+inline ll gcd(ll a,ll b) {
+    return !b?a:gcd(b,a%b);
+}
+inline ll exgcd(ll a,ll b,ll &x,ll &y) {
+    if (!b) {
+        x=1,y=0;
+        return a;
+    }
+    ll d=exgcd(b,a%b,y,x);
+    y-=(a/b)*x;
+    return d;
+}
+inline ll inv(ll a,ll p) {
+    return fpow(a,p-2,p);
+}
+struct Hash_{
+    int head[mop],last[mop],etot;
+    ll dest[mop][2];
+    void init(){
+        memset(head,0,sizeof(head));
+        etot=0;
+    }
+    void add(ll a,ll b){
+        int key=a%mop;
+        for(int t=head[key];t;t=last[t])
+            if(dest[t][0]==a) return;
+        last[++etot]=head[key];
+        dest[etot][0]=a;
+        dest[etot][1]=b;
+        head[key]=etot;
+    }
+    ll query(int a){
+        int key=a%mop;
+        for(int t=head[key];t;t=last[t])
+            if(dest[t][0]==a) return dest[t][1];
+        return -1;
+    }
+}has;
+inline ll BSGS(ll g, ll a,ll p){
+    if (g%p==0) return -1;
+    has.init();
+    ll m=(ll)ceil(sqrt(a))+1;
+    ll cur=1;
+    for(register int i=0;i<m;++i,cur=mult(cur,g,p)){
+        if(cur==a) return i;
+        has.add(cur,i);
+    }
+    ll base=inv(cur,p);
+    cur=mult(base,a,p);
+    for(register int i=m;i<=p-1;i+=m,cur=mult(cur,base,p)) {
+        ll j=has.query(cur);
+        if(~j) return j+i;
+    }
+    return -1;
+}
+inline void work(ll A,ll B,ll C) {
+    ll root=broot(C);
+    ll cc=BSGS(root,B,C);
+    ll bb=C-1;
+    ll d=gcd(A,bb);
+    if (cc%d) {
+        cout<<"-1\n";
+        return ;
+    }
+    ll x,y;
+    d=exgcd(A,bb,x,y);
+    bb/=d,cc/=d;
+    ans[0]=mult(x,cc,bb);
+    for (int i=1;i<d;++i)
+        ans[i]=ans[i-1]+bb;
+    for (int i=0;i<d;++i)
+        ans[i]=fpow(root,ans[i],C);
+    sort(ans,ans+d);
+    for (int i=0;i<d;++i)
+        cout<<ans[i]<<endl;
+}
+int main() {
+//  freopen("hdu 3930.in","r",stdin);
+    ios::sync_with_stdio(false);
+    linear_shaker();
+    int kase=0;
+    while (cin>>A>>C>>B) {
+        cout<<"case"<<++kase<<":\n";
+        work(A,B,C);
+    }
+    return 0;
+}

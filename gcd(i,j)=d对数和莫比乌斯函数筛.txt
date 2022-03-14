@@ -1,0 +1,99 @@
+signed Eu[maxn];
+bool vis[maxn];
+signed prim[maxn];
+signed minPrim[maxn];
+signed top = 0;
+void init_Prime()
+{
+	vis[0] = vis[1] = 1;
+	for (int i = 2; i < maxn; i++)
+	{
+		if (!vis[i])prim[top++] = i;
+		for (int j = 0; j < top&&i*prim[j] < maxn; j++)
+		{
+			vis[i*prim[j]] = 1;
+			minPrim[i*prim[j]] = prim[j];
+			if (i%prim[j] == 0)break;
+		}
+	}
+}
+void init_Eu()
+{
+	init_Prime();
+	
+	for (int i = 2; i <maxn; i++)
+	{
+		signed tmp_i = i;
+		signed tmp_tmp_i;
+		int phi = i;
+		while (vis[tmp_i]&&tmp_i!=1)
+		{
+			phi /= minPrim[tmp_i];
+			phi *= (minPrim[tmp_i] - 1);
+			tmp_tmp_i = tmp_i;
+			while (tmp_i%minPrim[tmp_tmp_i] == 0)
+				tmp_i /= minPrim[tmp_tmp_i];
+		}
+		if (tmp_i != 1)
+		{
+			phi /= tmp_i;
+			phi *= (tmp_i - 1);
+		}
+		Eu[i] = phi;
+	}
+	Eu[1] = 1;
+}
+int sum_gcd_i_j(int n, int m)
+{
+	init_Eu();
+	int tmp = min(n, m);
+	int ans = 0;
+	for (int i = 1; i <= tmp; i++)
+		ans += Eu[i] * (n / i)*(m / i);
+	//cout << ans << endl;
+	return ans;
+}
+signed mobs[maxn];
+void mobius()
+{
+	signed cnt = 0;
+	init_Prime();
+	for (int i = 2; i < maxn; i++)
+	{
+		signed tmp_i = i;
+		signed tmp_tmp_i;
+		cnt = 0;
+		signed miu = 1;
+		while (vis[tmp_i] && tmp_i != 1)
+		{
+			tmp_tmp_i = tmp_i;
+			cnt = 0;
+			while (tmp_i%minPrim[tmp_tmp_i] == 0)
+				tmp_i /= minPrim[tmp_tmp_i],cnt++;
+			if (cnt == 1)miu *= -1;
+			else if (cnt >= 2)miu *= 0;
+		}
+		if (tmp_i != 1)
+		{
+			miu *= -1;
+		}
+		mobs[i] = miu;
+	}
+	mobs[1] = 1;
+	
+}
+signed main() {
+	ios::sync_with_stdio(0);
+	cin.tie(0);
+	long long t, n, m, A, B,d, C, D,u,v,k,x,y,z;
+	string str;
+	cin >> A >> B >> d;
+	A /= d, B /= d;
+	int tmp = min(A, B);
+	int ans = 0;
+	mobius();
+	for (int i = 1; i <= tmp; i++)
+		ans += mobs[i] * (A / i)*(B / i);
+	cout << ans << endl;
+	return 0;
+}

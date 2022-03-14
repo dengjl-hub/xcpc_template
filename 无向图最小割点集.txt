@@ -1,0 +1,106 @@
+const LL mod = 1e9 + 7;
+inline LL QPow(LL a, LL b)
+{
+	LL ans = 1;
+	if (b < 0 || a == 0)return 0;
+	while (b)
+	{
+		if (b & 1)ans = ans * a%mod;
+		a = a * a%mod;
+		b >>= 1;
+	}
+	return ans;
+}
+
+#define mes(x) memset(x,0,sizeof x)
+const int inf = mod;
+const int maxn = 2e3 + 4;
+const int maxm = 2e3 + 5;
+int n, m, x, cnt = 0,S,T;
+int head[maxn];
+int dis[maxn];
+struct edge
+{
+	int v, w, nx;;
+}eds[maxm * 2];
+inline void add_edge(int u, int v, int w)
+{
+	eds[cnt].v = v;
+	eds[cnt].w = w;
+	eds[cnt].nx = head[u];
+	head[u] = cnt++;
+}
+inline void add(int u, int v, int w)
+{
+	add_edge(u, v, w), add_edge(v, u, 0);
+}
+bool bfs()
+{
+	memset(dis, -1, sizeof dis);
+	dis[S] = 0;
+	queue<int>q;
+	q.push(S);
+	while (!q.empty())
+	{
+		int r = q.front();
+		q.pop();
+		for (int i = head[r]; i != -1; i = eds[i].nx)
+		{
+			int j = eds[i].v;
+			if (dis[j] == -1 && eds[i].w)
+			{
+				dis[j] = dis[r] + 1;
+				q.push(j);
+			}
+		}
+	}
+	return dis[T] != -1;
+}
+int dfs(int u, int flo)
+{
+	if (u == T)return flo;
+	int detla = flo;
+	for (int i = head[u]; i != -1; i = eds[i].nx)
+	{
+		int v = eds[i].v;
+		if (dis[v] == (dis[u] + 1) && (eds[i].w > 0))
+		{
+			int d = dfs(v, min(detla, eds[i].w));
+			eds[i].w -= d;
+			eds[i ^ 1].v += d;
+			detla -= d;
+			if (detla == 0)break;
+		}
+	}
+	return flo - detla;
+}
+int dini()
+{
+	int ans = 0;
+	while (bfs())
+	{
+		ans += dfs(S, inf);
+	}
+	return ans;
+}
+signed main()
+{
+	ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+	ifstream in("Text.txt");
+	cin >> n >> m >> S>>T;
+	S += n;
+	int u, v, w;
+	memset(head, -1, sizeof head);
+	for (int i = 1; i <= n; i++)
+		add(i, i + n, 1);
+	while (m--)
+	{
+		cin >> u >> v;
+		add(u+n, v, inf);
+		add(v+n, u, inf);
+	}
+	int a = dini();//求最大流
+	cout << a << endl;
+	system("pause");
+	return 0;
+}

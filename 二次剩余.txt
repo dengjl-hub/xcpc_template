@@ -1,0 +1,41 @@
+//注意开long long
+const LL mod = 1e9 + 7;
+
+ll fpow(ll a, ll b, ll c) { a %= c; ll ans = 1; while (b > 0) { if (b & 1)ans = ans * a%c; b >>= 1; a = a * a%c; }return ans; }
+bool IsQuadraticResidue(ll a, ll p) {//判断a是否为p的二次剩余 p是素数
+	return fpow(a, (p - 1) >> 1, p) == 1;
+}
+ll Shanks(ll a, const ll p) {//求解二次同余方程x^2=a(mod p) p是素数
+	if (a == 0)return 0;
+	ll q = p - 1, e = 0;
+	while (!(q & 1))q >>= 1, e++;
+	static mt19937_64 rd(time(0));
+	ll n = rd() % (p - 1) + 1;//随机选取p的一个非二次剩余，若p为定值，n也可为定值
+	while (IsQuadraticResidue(n, p))n = rd() % (p - 1) + 1;
+	ll z = fpow(n, q, p), y = z, r = e, x = fpow(a, (q - 1) >> 1, p), b = a * x%p*x%p;
+	x = a * x%p;
+	while (b != 1) {
+		ll temp = b * b%p, m = 1;
+		while (temp != 1)(temp *= temp) %= p, m++;
+		if (m == r)return -1;
+		ll t = y;
+		//rep(i, 1, r - m - 1)
+		for (int i = 1; i <= r - m - 1; i++)
+			(t *= t) %= p;
+		y = t * t%p, r = m % p, x = x * t%p, b = b * y%p;
+	}
+	return x;
+}
+signed main() 
+{
+	ios::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+	for (int i = 1; i < mod; i+=7)
+	{
+		LL tmp = Shanks(i, mod);
+		if (tmp*tmp%mod != i&&tmp!=-1)cout << i << " ";
+	}
+	//system("pause");
+	return 0;
+}

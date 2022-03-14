@@ -1,0 +1,28 @@
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long LL;
+const int N = 1e7+2;
+LL L[N],R[N];
+LL primepi(LL n){
+    LL rn = (LL)sqrt(n+0.2);
+    for(LL i=1;i<=rn;++i)   R[i]=n/i-1;
+    LL ln = n/(rn+1)+1;
+    for(LL i=1;i<=ln;++i)   L[i]=i-1;
+    for(LL p=2;p<=rn;++p){
+        if(L[p]==L[p-1])    continue;
+        for(LL i=1,tn=min(n/(p*p),rn);i<=tn;++i){
+            R[i] -= (i*p<=rn?R[i*p]:L[n/(i*p)])-L[p-1];
+        }
+        for(LL i=ln;i>=p*p;--i){
+            L[i] -= L[i/p]-L[p-1];
+        }
+    }
+    return R[1];
+}
+int main(){
+    LL n;
+    while(cin>>n){  // n=98765432109876 = 9.8*10^13 用时 193s
+        cout<<primepi(n)<<endl;
+    }
+    return 0;
+}

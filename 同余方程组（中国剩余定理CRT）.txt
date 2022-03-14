@@ -1,0 +1,41 @@
+const int maxn = 2e5 + 5;
+LL n, Wi[20], Bi[20];
+LL ex_gcd(LL a, LL b, LL &x, LL &y)
+{
+	if (!b)
+	{
+		x = 1, y = 0;
+		return a;
+	}
+	LL d = ex_gcd(b, a%b, x, y);
+	LL tmp = x;
+	x = y;
+	y = tmp - a / b * y;
+	return d;
+}
+LL CRT(LL*Wi, LL*Bi, LL k)
+{
+	LL x, y, a = 0, m, n = 1;
+	for (LL i = 0; i < k; i++)
+		n *= Wi[i];
+	for (LL i = 0; i < k; i++)
+	{
+		m = n / Wi[i];
+		ex_gcd(Wi[i], m, x, y);
+		a = (a + y * m*Bi[i]) % n;
+	}
+	return a > 0 ? a : a + n;
+}
+signed main() {
+	ios::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+	int t,n;
+	string str;
+	cin >> n;
+	for (LL i = 0; i < n; i++)
+		cin >> Wi[i] >> Bi[i];
+	cout << CRT(Wi,Bi,n);
+	system("pause");
+	return 0;
+}

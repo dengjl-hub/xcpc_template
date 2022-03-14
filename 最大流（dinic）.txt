@@ -1,0 +1,62 @@
+#include <cstdio>
+#include <algorithm>
+#include <cstring>
+#define fo(i,a,b) for (i=a;i<=b;i++)
+using namespace std;
+const int inf=10000007;
+const int maxn=200050;
+int n,i,k,s,t,ans,tot,x,y;
+int q[maxn],head[maxn],next[maxn],b[maxn],c[maxn],cur[maxn],d[maxn];
+void plus(int x,int y,int z){next[++tot]=head[x];head[x]=tot;b[tot]=y;c[tot]=z;}
+void add(int x,int y,int z){ plus(x,y,z); plus(y,x,0);}
+int bfs(){
+    int l,r,x,i;
+    l=0,r=1; q[r]=s;
+    memset(d,0,sizeof(d));
+    d[s]=1;
+    while (l<r){
+        x=q[++l];
+        for (i=head[x];i!=-1;i=next[i]){
+            if ((d[b[i]]==0)&&(c[i]>0)) {
+                d[b[i]]=d[x]+1;
+                q[++r]=b[i];
+            }
+        }
+    }
+    if (d[t]>0) return 1; else return 0;
+}
+int dfs(int x,int f){
+    if (x==t) return f;
+    for (int & i=cur[x];i!=-1;i=next[i]){
+        if ((d[b[i]]==d[x]+1)&&(c[i]>0)){
+            int di=dfs(b[i],min(f,c[i]));
+            if (di>0){
+                c[i]-=di;
+                c[i^1]+=di;
+                return di;
+            }
+        }
+    }
+    return 0;
+}
+int main(){
+    scanf("%d%d",&n,&k);
+    tot=-1; 
+    memset(next,-1,sizeof(next));
+    memset(head,-1,sizeof(head));
+    s=0,t=2*n+1;
+    fo(i,1,n) {
+        add(s,i,1);
+        add(i+n,t,1);
+    }
+    fo(i,1,k){
+        scanf("%d%d",&x,&y);
+        add(x,y+n,inf);//建图*********
+    }
+//dinic part
+    while (bfs()) {
+        fo(i,s,t) cur[i]=head[i];//如果不是源点和汇点为最小最大，要手动改范围，
+        while (int di=dfs(s,inf)) ans+=di;
+    }
+    printf("%d\n",ans);
+}

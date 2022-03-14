@@ -1,0 +1,40 @@
+signed Eu[maxn];
+bool vis[maxn];
+signed prim[maxn];
+signed minPrim[maxn];
+signed numOfDivisor[maxn];
+signed top = 0;
+void init_Prime()
+{
+	vis[0] = vis[1] = 1;
+	for (int i = 2; i < maxn; i++)
+	{
+		if (!vis[i])prim[top++] = i;
+		for (int j = 0; j < top&&i*prim[j] < maxn; j++)
+		{
+			vis[i*prim[j]] = 1;
+			minPrim[i*prim[j]] = prim[j];
+			if (i%prim[j] == 0)break;
+		}
+	}
+}
+void init_numOfDivisor()
+{
+	init_Prime();
+	numOfDivisor[1] = 1;
+	for (int i = 2; i < maxn; i++)
+	{
+		int tmp = 1;
+		int tmp_i = i, tmp_tmp_i = i;
+		while (vis[tmp_i] && tmp_i != 1)
+		{
+			tmp_tmp_i = tmp_i;
+			signed cnt = 1;
+			while (tmp_i%minPrim[tmp_tmp_i] == 0)
+				cnt++, tmp_i /= minPrim[tmp_tmp_i];
+			tmp *= cnt;
+		}
+		if (tmp_i != 1)tmp *= 2;
+		numOfDivisor[i] = tmp;
+	}
+}

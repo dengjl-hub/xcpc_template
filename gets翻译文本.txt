@@ -1,0 +1,76 @@
+#include <iostream>
+#include<string.h>
+#include<map>
+#include<stdio.h>
+#include<unordered_map>
+using namespace std;
+typedef long long LL;
+using namespace std;
+const LL mod = 1e9 + 7;
+LL QPow(LL a, LL b)
+{
+	LL as = 1;
+	if (b < 0)return 0;
+	while (b)
+	{
+		if (b & 1)as = as * a%mod;
+		a = a * a%mod;
+		b >>= 1;
+	}
+	return as;
+}
+const int maxn = 1e6 + 100;
+inline int rd() {
+	int ans = 0; char last = ' ', ch = getchar();
+	while (!(ch >= '0' && ch <= '9'))last = ch, ch = getchar();
+	while (ch >= '0' && ch <= '9')ans = ans * 10 + ch - '0', ch = getchar();
+	return ans;
+}
+signed tree[maxn][27];
+signed flag[maxn];
+//signed sum[maxn];
+signed tot;
+char tmp[4002];
+signed main()
+{
+	ios::sync_with_stdio(0);
+	cin.tie(0);
+	signed t, n, k, x,p,u,v;
+	//cin >> t;
+	string str;
+	cin >> str;
+	map<string, string>mp;
+	string str1, str2;
+	while (1)
+	{
+		cin >> str1;
+		if (str1[0] == 'E')break;
+		cin >> str2;
+		mp[str2] = str1;
+	}
+	cin >> str;
+	getchar();
+	str1 = "";
+	while (1)
+	{
+		gets_s(tmp);
+		if (tmp[0] == 'E')break;
+		signed len = strlen(tmp);
+		str1 = "";
+		for (int i = 0; i < len; i++)
+		{
+			if (tmp[i] - 'a' < 0 || tmp[i] - 'a' >= 26)
+			{
+				if (mp.count(str1))
+					cout << mp[str1];
+				else cout << str1;
+				cout << tmp[i];
+				str1.clear();
+			}
+			else str1.push_back(tmp[i]);
+		}
+		cout << endl;
+	}
+	//system("pause");
+	return 0;
+}

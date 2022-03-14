@@ -1,0 +1,145 @@
+#include <iostream>
+#include<fstream>
+#include<iomanip>
+#include<algorithm>
+#include<string>
+#include<string.h>
+#include<vector>
+#include<cstdlib>
+#include<time.h>
+#include<math.h>
+#include<cmath>
+#include<stdlib.h>
+#include<set>
+#include<sstream>
+#include<map>
+#include<stdio.h>
+#include<cstring>
+#include<unordered_map>
+#include<queue>
+using namespace std;
+#define lson rt<<1
+#define rson rt<<1|1
+#define mid (l+r)>>1
+#define cf cout.flush()
+typedef long long LL;
+typedef long long ll;
+typedef pair<LL, LL> pll;
+typedef pair<signed, signed>P;
+using namespace std;
+#define int long long
+#define cf cout.flush()
+#ifdef sprintf
+#define sprintf_s sprintf
+#endif
+
+inline signed gcd(signed a, signed b) { return b ? gcd(b, a%b) : a; };
+const LL mod = 1e9 + 7;
+LL QPow(LL a, LL b)
+{
+	LL as = 1;
+	if (b < 0)return 0;
+	while (b)
+	{
+		if (b & 1)as = as * a%mod;
+		a = a * a%mod;
+		b >>= 1;
+	}
+	return as;
+}
+
+const int maxn = 2e6 + 100;
+inline int rd() {
+	int ans = 0; char last = ' ', ch = getchar();
+	while (!(ch >= '0' && ch <= '9'))last = ch, ch = getchar();
+	while (ch >= '0' && ch <= '9')ans = ans * 10 + ch - '0', ch = getchar();
+	return ans;
+}
+signed tree[maxn][30];
+bool flag[maxn];
+signed sum[maxn];
+signed tot;
+void insert(const string&str)
+{
+	//cout << "str:"<<str << endl;
+	int len = str.size();
+	signed root = 0;
+	for (int i = 0; i < len; i++)
+	{
+		int id = str[i] - 'a';
+		if (!tree[root][id])tree[root][id] = ++tot;
+		root = tree[root][id];
+		//sum[root]++;
+	}
+	flag[root] = 1;
+}
+signed find(const string&str)
+{
+	signed len = str.size();
+	int root = 0;
+	for (int i = 0; i < len; i++)
+	{
+		int id = str[i] - 'a';
+		if (!tree[root][id])return 0;
+		root = tree[root][id];
+	}
+	return 1;
+}
+void init()
+{
+	for (signed i = 0; i <= tot; i++)
+	{
+		flag[i] = 0;
+		for (int j = 0; j < 30; j++)tree[i][j] = 0;
+	}
+	tot = 0;
+}
+char str[maxn];
+char ptr;
+signed main()
+{
+	ios::sync_with_stdio(0);
+	cin.tie(0);
+	int t, n,k, x,p,u,v;
+	string str;
+	char ch;
+	/*while (1)
+	{
+		(ch = getchar());
+		while (1 && ch != '\n')
+		{
+			if (ch == '#')return 0;
+			if (ch == ' ')
+				insert(str), str.clear();
+			else str.push_back(ch);
+			if(ch==' ')
+			     while(ch==' ')ch = getchar();
+			else ch = getchar();
+		}
+		if(str.size())
+		insert(str);
+		str.clear();
+		int ans = 0;
+		for (int i = 0; i <= tot; i++)
+			ans += flag[i];
+		cout << ans << endl;
+		init();
+	}*/
+	string str1, str2;
+	while (getline(cin, str1))
+	{
+		if (str1 == "#")break;
+		int ans = 0;
+		stringstream ss(str1);
+		while (ss >> str2)
+		{
+			insert(str2);
+		}
+		//signed ans = 0;
+		for (int i = 0; i <= tot; i++)
+			ans += flag[i];
+		init();
+		cout << ans << endl;
+	}
+	return 0;
+}

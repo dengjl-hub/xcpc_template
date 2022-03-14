@@ -1,0 +1,28 @@
+int arr[maxn];
+int tmp[maxn];
+void mergeSort(int l, int r)
+{
+	if (l < r)
+	{
+		int md = (l + r) >> 1;
+		mergeSort(l, md), mergeSort(md + 1, r);
+		int lef = l, rig = md + 1;
+		int cnt = l;
+		while (lef <= md || rig <= r)
+		{
+			if (lef > md)
+			{
+				tmp[cnt++] = arr[rig++]; continue;
+			}
+			if (rig > r)
+			{
+				tmp[cnt++] = arr[lef++];
+				continue;
+			}
+			if (arr[lef] > arr[rig])tmp[cnt++] = arr[rig++];
+			else tmp[cnt++] = arr[lef++];
+		}
+		for (int i = l; i <= r; i++)arr[i] = tmp[i];
+	}
+	else return;
+}

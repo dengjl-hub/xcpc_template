@@ -1,0 +1,44 @@
+int mp[502][502];
+int flag[502];
+bool vis[502];
+int n1;//另一边图的点数
+bool dfs(int x)
+{
+	for (int i = 1; i <= n1; i++)//遍历另一边
+	{
+		if (vis[i] == 0 && mp[x][i])
+		{
+			vis[i] = 1;
+			if (flag[i] == 0 || dfs(flag[i]))
+			{
+				flag[i] = x;
+				return 1;
+			}
+		}
+	}
+	return 0;
+}
+void solve()
+{
+	cin >> m >> n;
+	int u, v;
+	cin >> u >> v;
+	while (u != -1)
+	{
+		mp[u][v - m] = 1;
+		cin >> u >> v;
+	}
+	n1 = n - m;
+	vector<P>vec;
+	for (int i = 1; i <= n; i++)
+	{
+		memset(vis, 0, sizeof vis);
+		dfs(i);
+	}
+	for (int i = 1; i <= n1; i++)
+		if (flag[i])
+			vec.push_back({ flag[i],i + m });
+	cout << vec.size() << endl;//输出匹配方案
+	for (auto it : vec)
+		cout << it.first << ' ' << it.second << '\n';
+}

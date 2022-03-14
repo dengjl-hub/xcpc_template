@@ -1,0 +1,79 @@
+const int MAXINT = ((1 << 30) - 1) * 2 + 1;
+
+int A, B, C;
+struct Hashmap
+{
+	static const int Ha = 999917, maxe = 46340;
+	int E, lnk[Ha], son[maxe + 5], nxt[maxe + 5], w[maxe + 5];
+	int top, stk[maxe + 5];
+	void clear() { E = 0; while (top) lnk[stk[top--]] = 0; }
+	void Add(int x, int y) { son[++E] = y; nxt[E] = lnk[x]; w[E] = MAXINT; lnk[x] = E; }
+	bool count(int y)
+	{
+		int x = y % Ha;
+		for (int j = lnk[x]; j; j = nxt[j])
+			if (y == son[j]) return true;
+		return false;
+	}
+	int& operator [] (int y)
+	{
+		int x = y % Ha;
+		for (int j = lnk[x]; j; j = nxt[j])
+			if (y == son[j]) return w[j];
+		Add(x, y); stk[++top] = x; return w[E];
+	}
+};
+Hashmap f;
+
+int gcd(int a, int b) { if (!b) return a; else return gcd(b, a%b); }
+int exgcd(int a, int b, int &x, int &y)
+{
+	if (!b) { x = 1; y = 0; return a; }
+	int r = exgcd(b, a%b, x, y), t = x; x = y; y = t - a / b * y;
+	return r;
+}
+int exBSGS(int A, int B, int C)
+{
+	if (C == 1) if (!B) return A != 1; else return -1;
+	if (B == 1) if (A) return 0; else return -1;
+	if (A%C == 0) if (!B) return 1; else return -1;
+	int r, D = 1, num = 0;
+	while ((r = gcd(A, C)) > 1) //把A,C变成(A,C)=1为止
+	{
+		if (B%r) return -1; num++;
+		B /= r; C /= r; D = ((LL)D*A / r) % C; //将多出来的乘给D
+	}
+	for (int i = 0, now = 1; i < num; i++, now = ((LL)now*A) % C)
+		if (now == B) return i; //枚举0~num-1
+	int m = ceil(sqrt(C)), Base = 1; f.clear();
+	for (int i = 0; i <= m - 1; i++)
+	{
+		f[Base] = min(f[Base], i);
+		Base = ((LL)Base*A) % C;
+	}
+	for (int i = 0; i <= m - 1; i++)
+	{
+		int x, y, r = exgcd(D, C, x, y);
+		x = ((LL)x*B%C + C) % C;
+		if (f.count(x)) return i * m + f[x] + num; //别忘了答案加num
+		D = ((LL)D*Base) % C;
+	}
+	return -1;
+}
+signed main() {
+	ios::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+	int t,n;
+	string str;
+	while(cin>>C>>A>>B)
+	{
+		int tmp = exBSGS(A, B, C);
+		if (tmp == -1)
+			cout << "No Solution\n";
+		else cout << tmp << '\n';
+		//cin >> C >> A >> B;
+	}
+	system("pause");
+	return 0;
+}

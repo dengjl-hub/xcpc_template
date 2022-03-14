@@ -1,0 +1,156 @@
+#include <iostream>
+#include<string>
+#include<string.h>
+#include<cstring>
+#include<fstream>
+#include<iomanip>
+#include<algorithm>
+#include<string>
+#include<random>
+#include<string.h>
+#include<vector>
+#include<cstdlib>
+#include<time.h>
+#include<math.h>
+#include<cmath>
+#include<stdlib.h>
+#include<set>
+#include<sstream>
+#include<map>
+#include<stdio.h>
+#include<cstring>
+//#include<unordered_map>
+#include<queue>
+using namespace std;
+#define lson rt<<1
+#define rson rt<<1|1
+#define mid (l+r)>>1
+#define cf cout.flush()
+typedef long long LL;
+typedef long long ll;
+typedef pair<LL, LL> pll;
+typedef pair<signed, signed>P;
+using namespace std;
+//#define int long long
+#define il inline
+//inline int gcd(int a, int b) { return b ? gcd(b, a%b) : a; };
+const LL mod = 1e9 + 7;
+inline LL QPow(LL a, LL b)
+{
+	LL ans = 1;
+	if (b < 0 || a == 0)return 0;
+	while (b)
+	{
+		if (b & 1)ans = ans * a%mod;
+		a = a * a%mod;
+		b >>= 1;
+	}
+	return ans;
+}
+
+#define mes(x) memset(x,0,sizeof x)
+LL inf = mod;
+const int maxn = 5e3 + 5;
+const int maxm = 2e5 + 5;
+int n, m, s, t, cnt = 0;
+int head[maxn];
+int cur[maxn];
+int dis[maxn];
+bool vis[maxn];
+int minfee = 0;
+struct edge
+{
+	int v, w, nx, f;//w=cost
+}eds[maxm * 2];
+inline void add(int u, int v, int flow, int w)
+{
+	eds[cnt].v = v;
+	eds[cnt].w = w;//cost
+	eds[cnt].f = flow;
+	eds[cnt].nx = head[u];
+	head[u] = cnt++;
+}
+bool spfa(int u, int v)
+{
+	for (int i = 0; i < maxn; i++)dis[i] = inf;
+	mes(vis);
+	dis[u] = 0;
+	deque<int>d;
+	d.push_back(u);
+	vis[u] = 1;
+	while (!d.empty())
+	{
+		int uu = d.front();
+		d.pop_front();
+		vis[uu] = 0;
+		for (int i = head[uu]; i != -1; i = eds[i].nx)
+		{
+			int vv = eds[i].v;
+			int w = eds[i].w;
+			int f = eds[i].f;
+			if (f&&dis[vv] > dis[uu] + w)
+			{
+				dis[vv] = dis[uu] + w;
+				if (!vis[vv])
+				{
+					if (!d.empty() && dis[vv] < dis[d.front()])
+						d.push_front(vv);
+					else d.push_back(vv);
+				}
+			}
+		}
+	}
+	return dis[t] != inf;
+}
+int dfs(int u, int flo)
+{
+	if (u == t)return flo;
+	int detla = flo;
+	vis[u] = 1;
+	for (int i = head[u]; i != -1; i = eds[i].nx)
+	{
+		int v = eds[i].v;
+		int w = eds[i].w;
+		int f = eds[i].f;
+		if (f && !vis[v] && dis[v] == (dis[u] + w))
+		{
+			int d = dfs(v, min(detla, f));
+			detla -= d;
+			eds[i ^ 1].f += d;
+			eds[i].f -= d;
+			minfee += d * w;
+			if (detla == 0)break;
+		}
+	}
+	vis[u] = 0;
+	return flo - detla;
+}
+int dini()
+{
+	int ans = 0;
+	while (spfa(s, t))
+	{
+		mes(vis);
+		ans += dfs(s, inf);
+	}
+	return ans;
+}
+int mp[200][200];
+int sum[202];
+signed main() 
+{
+	ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+	ifstream in("Text.txt");
+	cin >> n >> m >> s >> t;
+	LL u, v, w,c;
+	memset(head, -1, sizeof head);
+	while (m--)
+	{
+		cin >> u >> v >> w>>c;
+		add(u, v, w,c);
+		add(v, u, 0,-c);
+	}
+	cout << dini() << " " << minfee << endl;
+	system("pause");
+	return 0;
+}

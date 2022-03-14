@@ -1,0 +1,60 @@
+const long long maxn = 410;		//特以此纪念本人数据范围开小卡90分卡两天
+const int mod = 1e9 + 7;
+int a[maxn][maxn];
+int n, is[maxn], js[maxn];
+void exgcd(int a, int b, int &x, int &y) {
+	if (!b)return x = 1, y = 0, void();
+	exgcd(b, a%b, y, x); y -= x * (a / b);
+}
+int inv(int p) {
+	int x, y; exgcd(p, mod, x, y);
+	return (x + mod) % mod;
+}
+bool  mat_inv() {
+	for (int k = 1; k <= n; k++) {
+		for (int i = k; i <= n; i++) // 1
+			for (int j = k; j <= n; j++)if (a[i][j]) {
+				is[k] = i, js[k] = j; break;
+			}
+		for (int i = 1; i <= n; i++) // 2
+			swap(a[k][i], a[is[k]][i]);
+		for (int i = 1; i <= n; i++)
+			swap(a[i][k], a[i][js[k]]);
+		if (!a[k][k]) {
+			return 0;
+		}
+		a[k][k] = inv(a[k][k]); // 3
+		for (int j = 1; j <= n; j++)if (j != k) // 4
+			(a[k][j] *= a[k][k]) %= mod;
+		for (int i = 1; i <= n; i++)if (i != k) // 5
+			for (int j = 1; j <= n; j++)if (j != k)
+				(a[i][j] += mod - a[i][k] * a[k][j] % mod) %= mod;
+		for (int i = 1; i <= n; i++)if (i != k) // 就是这里不同
+			a[i][k] = (mod - a[i][k] * a[k][k] % mod) % mod;
+	}
+	for (int k = n; k; k--) { // 6
+		for (int i = 1; i <= n; i++)
+			swap(a[js[k]][i], a[k][i]);
+		for (int i = 1; i <= n; i++)
+			swap(a[i][is[k]], a[i][k]);
+	}
+	return 1;
+}
+signed main() {
+	ios::sync_with_stdio(0), cout.tie(0), cin.tie(0);
+	cin >> n;
+	for (int i = 1; i <= n; i++)
+		for (int j = 1; j <= n; j++)
+			cin >> a[i][j];
+	bool flag=mat_inv();
+	if (!flag)
+		cout << "No Solution\n";
+	else
+	{
+		for (int i = 1; i <= n; i++)
+			for (int j = 1; j <= n; j++)
+				cout << a[i][j] << (j == n ? '\n' : ' ');
+	}
+	system("pause");
+	return 0;
+}//光棍数字收
